@@ -19,6 +19,9 @@ const (
 	AwsTimeFormat = "2006-01-02T15:04:05.000Z"
 	DateTime      = "2006-01-02"
 	TimeStamp     = "15:04:05.000"
+	RedHatAccount = "309956199498"
+	UbuntuAccount = "679593333241"
+	SuseAccount   = "013907871322"
 )
 
 // TODO: logical splitting of the file into multiple packages.
@@ -61,10 +64,25 @@ func main() {
 	// Using the Config value, create the EC2 client
 	svc := ec2.New(cfg)
 
-	// Expand to all of the versions we want to support
+	// TODO: Will need to ensure that there are no ECS ami's pulled within these as well via regex filtering
+	// But that will have to occur in the loop I believe.
+	// TODO: Ensure that ami's that return nothing will error more gracefully with a note. e.g. "suse-sles-12-sp1-v*",
+	// will not return anything for London region.
 	amiNames := []string{
-		"Windows_Server-2012-R2_RTM-English-64Bit-Core*",
-		"Windows_Server-2012-R2_RTM-English-64Bit-Base*",
+		// "suse-sles-12-sp1-v*",
+		"suse-sles-12-sp2-v*",
+		"suse-sles-12-sp3-v*",
+		// "ubuntu-trusty-14.04-amd64-server-*",
+		// "ubuntu-xenial-16.04-amd64-server-*",
+		"RHEL-6.9_HVM_GA-*",
+		"RHEL-7.4_HVM_GA-*",
+		"Windows_Server-2008-R2_SP1-English-64Bit-Base-*",
+		"Windows_Server-2008-R2_SP1-English-64Bit-Core-*",
+		"Windows_Server-2012-R2_RTM-English-64Bit-Core-*",
+		"Windows_Server-2012-R2_RTM-English-64Bit-Base-*",
+		"Windows_Server-2016-English-Full-Base-*",
+		"Windows_Server-2016-English-Core-Base-*",
+		"Windows_Server-2016-English-Nano-Base-*",
 	}
 
 	// TODO: make dynamic based on arguments for the tags as well as ownership if we want to get privately owned amis.
@@ -76,15 +94,17 @@ func main() {
 				Name:   aws.String("architecture"),
 				Values: []string{"x86_64"},
 			}, {
-				Name:   aws.String("platform"),
-				Values: []string{"windows"},
-			},
-			{
+				Name:   aws.String("root-device-type"),
+				Values: []string{"ebs"},
+			}, {
+				Name:   aws.String("virtualization-type"),
+				Values: []string{"hvm"},
+			}, {
 				Name:   aws.String("name"),
 				Values: amiNames,
 			},
 		},
-		Owners: []string{"self", "amazon"},
+		Owners: []string{"self", "amazon", RedHatAccount, UbuntuAccount, SuseAccount},
 	}
 
 	req := svc.DescribeImagesRequest(params)
