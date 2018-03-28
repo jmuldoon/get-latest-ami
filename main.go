@@ -20,7 +20,7 @@ const (
 	DateTime      = "2006-01-02"
 	TimeStamp     = "15:04:05.000"
 	RedHatAccount = "309956199498"
-	UbuntuAccount = "679593333241"
+	UbuntuAccount = "099720109477"
 	SuseAccount   = "013907871322"
 )
 
@@ -72,8 +72,8 @@ func main() {
 		// "suse-sles-12-sp1-v*",
 		"suse-sles-12-sp2-v*",
 		"suse-sles-12-sp3-v*",
-		// "ubuntu-trusty-14.04-amd64-server-*",
-		// "ubuntu-xenial-16.04-amd64-server-*",
+		"ubuntu/images/hvm-ssd/ubuntu-trusty-14.04-amd64-server-*",
+		"ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-*",
 		"RHEL-6.9_HVM_GA-*",
 		"RHEL-7.4_HVM_GA-*",
 		"Windows_Server-2008-R2_SP1-English-64Bit-Base-*",
@@ -121,6 +121,7 @@ func main() {
 	for _, name := range amiNames {
 		amis := make(amiInfoSlice, 0)
 		reAmiName := regexp.MustCompile(name)
+
 		for _, ami := range resp.Images {
 			// Must match ami name regex, and the string creation date regex
 			if reAmiName.MatchString(aws.StringValue(ami.Name)) && reDate.MatchString(aws.StringValue(ami.CreationDate)) {
